@@ -1,27 +1,29 @@
 # The following code was updated from the QuantIT_RNAP_python_script_FLUENT_v6
-# To run: cd C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management
-# python QuantIT_RNAP_python_script_LOCAL_v6.py
+# To run: cd C:/Users/Max/Desktop/RNAP backdilution testing/
+# python QuantIT_RNAP_python_script_LOCAL_v7.py
 
 import os
 from datetime import datetime
-from statistics import mean, median, mode
 import math as math
 import pandas as pd
 import numpy as np
 
 
-# Step 1: Import FluentControl variables contained in a CSV.
-# Define the CSV file path.
-filepath = "C:/Users/Max/Desktop/RNAP backdilution testing/fluent_control_var_exports.csv"
+# Step 1: Declare all filepaths to be used in the script.
+exported_variables_file_path = "C:/Users/Max/Desktop/RNAP backdilution testing/fluent_control_var_exports.csv"
+local_working_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/working directory/"
+local_storage_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/automated backdilution cherrypick logs/"
+gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
+gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
 
-# Load the CSV file into a DataFrame.
-df = pd.read_csv(filepath ,header=None)
+# Load the exported CSV file into a DataFrame.
+df = pd.read_csv(exported_variables_file_path ,header=None)
 source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_volume_1, elution_volume_2, elution_volume_3, elution_volume_4 = df.iloc[1, :].astype(float)
 source_plate_count = int(source_plate_count)
 
 # Step 2: Make a dictionary of filepaths and their modification times.
-folder_path = "C:/Users/Max/Desktop/RNAP backdilution testing/measurement_files"
-file_dates_modified = {os.path.join(folder_path, filename): os.path.getmtime(os.path.join(folder_path, filename)) for filename in os.listdir(folder_path) if filename.endswith(".xlsx")}
+measurement_files_folder_path = "C:/Users/Max/Desktop/RNAP backdilution testing/measurement_files"
+file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
 
 # Step 3: Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
 files_sorted_by_modification_time = dict(sorted(file_dates_modified.items(), key=lambda x: x[1], reverse=True))
@@ -163,13 +165,6 @@ cherrypicking_df.drop(cherrypicking_zero_transfer_volume_rows, inplace=True)
 current_time = datetime.now()
 reformatted_datetime_string = current_time.strftime("%Y-%m-%d %H-%M-%S")
 
-# Define storage and working directories
-local_working_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/working directory/"
-
-local_storage_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/automated backdilution cherrypick logs/"
-#gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
-#gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
-
 # Define file names
 working_cherrypick_csv_filename = "Fluent_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
 
@@ -180,14 +175,14 @@ backup_cherrypick_csv_filename = f"{reformatted_datetime_string}_Fluent backdilu
 local_working_cherrypick_file_path = os.path.join(local_working_directory, working_cherrypick_csv_filename) # This is the local directory that contains temporary .CSV and .GWL files, referenced by FluentControl, overwritten during each scriptrun.
 
 local_metadata_file_path = os.path.join(local_storage_directory, metadata_csv_filename)
-#gdrive_metadata_file_path = os.path.join(gdrive_metadata_storage_directory, metadata_csv_filename)
+gdrive_metadata_file_path = os.path.join(gdrive_metadata_storage_directory, metadata_csv_filename)
 local_backup_cherrypick_file_path = os.path.join(local_storage_directory, backup_cherrypick_csv_filename)
-#gdrive_cherrypick_file_path = os.path.join(gdrive_cherrypick_storage_directory, backup_cherrypick_csv_filename)
+gdrive_cherrypick_file_path = os.path.join(gdrive_cherrypick_storage_directory, backup_cherrypick_csv_filename)
 
 # Export DataFrames to CSV
 cherrypicking_df.to_csv(local_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
 
 metadata_df.to_csv(local_metadata_file_path, index=False) # Export a local copy of metadata.
-#metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of metadata to RnD Transfer.
+metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of metadata to RnD Transfer.
 cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
-#cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
+cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
