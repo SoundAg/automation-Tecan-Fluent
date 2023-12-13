@@ -22,7 +22,7 @@ source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_
 source_plate_count = int(source_plate_count)
 
 # Step 2: Make a dictionary of filepaths and their modification times.
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
+measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
 file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
 
 # Step 3: Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
