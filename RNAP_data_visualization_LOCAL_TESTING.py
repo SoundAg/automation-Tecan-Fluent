@@ -10,10 +10,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 from datetime import datetime
 
 # Declare all filepaths to be used in the script.
-exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
-metadata_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
-plot_file_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Data visualization outputs/"
+exported_variables_file_path = "C:/Users/Max/Desktop/RNAP backdilution testing/rnap_automated_backdilution_cherrypick_inputs.csv"
+measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/test/"
+metadata_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/test/"
+plot_file_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Data visualization outputs/test/"
 
 # Import data inputs from FluentControl
 df = pd.read_csv(exported_variables_file_path ,header=None)
@@ -49,12 +49,12 @@ for each in range(0,len(standards_concentrations)):
     for n in range(0,12):
         standards_concentrations_array.append(standards_concentrations[each])
         
-x_axis_label = "Standards RFU data"
-y_axis_label = "Standards Concentrations (ng/ul)"
+x_axis_label = "Standards Concentrations (ng/ul)"
+y_axis_label = "Standards RFU data"
 
 standards_data = {
-    x_axis_label : all_standards_rfu_values,
-    y_axis_label : standards_concentrations_array
+    x_axis_label : standards_concentrations_array,
+    y_axis_label : all_standards_rfu_values
 }
 
 new_standards_df = pd.DataFrame(standards_data)
@@ -81,11 +81,11 @@ ax.set_ylabel(y_axis_label, labelpad=20, fontsize=12)
 ax.set_title("Quant-iT standards curve", fontsize=16, pad=10)
 
 # Set y-axis ticks and labels
-yticks = list(range(0, 121, 5))
-ax.set_yticks(yticks)
+xticks = list(range(0, 121, 5))
+ax.set_xticks(xticks)
 
-y_tick_labels = ax.get_yticklabels()
-for i, label in enumerate(y_tick_labels):
+x_tick_labels = ax.get_xticklabels()
+for i, label in enumerate(x_tick_labels):
     if i % 2 != 0:  # Check if the index is odd
         label.set_visible(False)
 

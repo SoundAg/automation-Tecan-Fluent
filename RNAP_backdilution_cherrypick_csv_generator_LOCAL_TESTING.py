@@ -10,11 +10,11 @@ import numpy as np
 
 
 # Step 1: Declare all filepaths to be used in the script.
-exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
-local_working_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/working directory/"
-local_storage_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/automated backdilution cherrypick logs/"
-gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
-gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
+exported_variables_file_path = "C:/Users/Max/Desktop/RNAP backdilution testing/rnap_automated_backdilution_cherrypick_inputs.csv"
+local_working_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/working directory/"
+local_storage_directory = "C:/Users/Max/Desktop/RNAP backdilution testing/automated backdilution cherrypick logs/"
+gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/test/"
+gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/test/"
 
 # Load the exported CSV file into a DataFrame.
 df = pd.read_csv(exported_variables_file_path ,header=None)
@@ -22,7 +22,7 @@ source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_
 source_plate_count = int(source_plate_count)
 
 # Step 2: Make a dictionary of filepaths and their modification times.
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
+measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/test/"
 file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
 
 # Step 3: Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
@@ -158,8 +158,34 @@ cherrypicking_df = pd.DataFrame({
 })
 
 # Drop cherrypicks from the DataFrame where transfer volume = 0 to minimize tip waste
-cherrypicking_zero_transfer_volume_rows = cherrypicking_df[(cherrypicking_df['VOLUME (ul)'] == 0)].index
-cherrypicking_df.drop(cherrypicking_zero_transfer_volume_rows, inplace=True)
+cherrypicking_zero_transfer_volume_row_indices = cherrypicking_df[(cherrypicking_df['VOLUME (ul)'] == 0)].index
+cherrypicking_df.drop(cherrypicking_zero_transfer_volume_row_indices, inplace=True)
+
+# Create a DataFrame from elution plates to get non-backdiluted well contents completely transferred.
+low_conc_metadata_df = metadata_df[(metadata_df['Backdilution volume needed for normalization (ul)'] == 0)]
+source_plate_name_list = low_conc_metadata_df['RNA Elution Plate #'].tolist()
+source_well_name_list = low_conc_metadata_df['Well ID'].tolist()
+destination_plate_name_list = low_conc_metadata_df['Backdilution Plate #'].tolist()
+volume_list = [0]*len(source_well_name_list)
+
+low_conc_cherrypicking_df = pd.DataFrame({
+    'SOURCE PLATE': source_plate_name_list,
+    'SOURCE WELL NAME': source_well_name_list,
+    'DESTINATION PLATE': destination_plate_name_list,
+    'DESTINATION WELL NAME': source_well_name_list,
+    'VOLUME (ul)': volume_list
+})
+
+elution_volumes = [elution_volume_1, elution_volume_2, elution_volume_3, elution_volume_4]
+plate_names = ['Elution plate[001]','Elution plate[002]','Elution plate[003]','Elution plate[004]']
+for i, elution_volume in enumerate(elution_volumes, start=1):
+    plate_name = plate_names[i-1]
+    low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
+        lambda row: row['VOLUME (ul)'] + (elution_volume/2) + 5 if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
+        axis=1)
+
+# Combine all cherrypicking dataframes.
+combined_cherrypicking_df = pd.concat([cherrypicking_df, low_conc_cherrypicking_df], ignore_index=True)
 
 # Format the current timestamp for file naming
 current_time = datetime.now()
@@ -180,9 +206,9 @@ local_backup_cherrypick_file_path = os.path.join(local_storage_directory, backup
 gdrive_cherrypick_file_path = os.path.join(gdrive_cherrypick_storage_directory, backup_cherrypick_csv_filename)
 
 # Export DataFrames to CSV
-cherrypicking_df.to_csv(local_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
+combined_cherrypicking_df.to_csv(local_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
 
 metadata_df.to_csv(local_metadata_file_path, index=False) # Export a local copy of metadata.
 metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of metadata to RnD Transfer.
-cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
-cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
+combined_cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
+combined_cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
