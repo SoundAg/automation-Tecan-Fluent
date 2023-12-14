@@ -179,10 +179,15 @@ low_conc_cherrypicking_df = pd.DataFrame({
 elution_volumes = [elution_volume_1, elution_volume_2, elution_volume_3, elution_volume_4]
 plate_names = ['Elution plate[001]','Elution plate[002]','Elution plate[003]','Elution plate[004]']
 for i, elution_volume in enumerate(elution_volumes, start=1):
-    plate_name = plate_names[i-1]
-    low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
-        lambda row: row['VOLUME (ul)'] + (elution_volume/2) + 5 if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
-        axis=1)
+    condition = (source_plate_count >= i) and (elution_volume/2 < 40)
+    if condition:
+        plate_name = plate_names[i-1]
+        low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
+            lambda row: row['VOLUME (ul)'] + (elution_volume/2) if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
+            axis=1)
+
+low_conc_cherrypicking_zero_volume_row_indices = low_conc_cherrypicking_df[(low_conc_cherrypicking_df['VOLUME (ul)'] == 0)].index
+low_conc_cherrypicking_df.drop(low_conc_cherrypicking_zero_volume_row_indices, inplace=True)
 
 # Combine all cherrypicking dataframes.
 combined_cherrypicking_df = pd.concat([cherrypicking_df, low_conc_cherrypicking_df], ignore_index=True)
