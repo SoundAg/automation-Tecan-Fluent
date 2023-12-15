@@ -11,7 +11,7 @@ from datetime import datetime
 
 # Declare all filepaths to be used in the script.
 exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
+measurement_files_folder_path  = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
 metadata_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
 plot_file_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Data visualization outputs/"
 
