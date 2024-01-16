@@ -13,8 +13,8 @@ import numpy as np
 exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
 local_working_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/working directory/"
 local_storage_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/automated backdilution cherrypick logs/"
-gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
-gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
+gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
+gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
 
 # Load the exported CSV file into a DataFrame.
 df = pd.read_csv(exported_variables_file_path ,header=None)
@@ -22,7 +22,7 @@ source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_
 source_plate_count = int(source_plate_count)
 
 # Step 2: Make a dictionary of filepaths and their modification times.
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1kOpNriLPL3kgZ-DM8TK4O3Bw06XKmk6M/Research/Operations/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
+measurement_files_folder_path = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
 file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
 
 # Step 3: Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
