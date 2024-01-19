@@ -183,7 +183,7 @@ for i, elution_volume in enumerate(elution_volumes, start=1):
     if condition:
         plate_name = plate_names[i-1]
         low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
-            lambda row: row['VOLUME (ul)'] + (elution_volume / 4) if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
+            lambda row: row['VOLUME (ul)'] + (elution_volume - (elution_volume / 4))) if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
             axis=1)
 
 low_conc_cherrypicking_zero_volume_row_indices = low_conc_cherrypicking_df[(low_conc_cherrypicking_df['VOLUME (ul)'] == 0)].index
