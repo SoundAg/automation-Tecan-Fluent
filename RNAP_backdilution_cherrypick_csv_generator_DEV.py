@@ -182,9 +182,13 @@ for i, elution_volume in enumerate(elution_volumes, start=1):
     condition = (source_plate_count >= i) and (elution_volume / 4 < 40)
     if condition:
         plate_name = plate_names[i-1]
+        remaining_elution_sample_volume = elution_volume - (elution_volume / 4)
         low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
-            lambda row: row['VOLUME (ul)'] + (elution_volume - (elution_volume / 4))) if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'],
-            axis=1)
+            lambda row: row['VOLUME (ul)'] + remaining_elution_sample_volume if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'], axis=1)
+        metadata_df['Elution sample remaining volume (ul)'] = metadata_df.apply(
+            lambda row: row['Elution sample remaining volume (ul)'] - remaining_elution_sample_volume if row['RNA Elution Plate #'] == plate_name else row['Elution sample remaining volume (ul)'], axis=1)
+        metadata_df['Backdilution sample final volume'] = metadata_df.apply(
+            lambda row: row['Backdilution sample final volume'] + remaining_elution_sample_volume if row['RNA Elution Plate #'] == plate_name else row['Backdilution sample final volume'], axis=1)
 
 low_conc_cherrypicking_zero_volume_row_indices = low_conc_cherrypicking_df[(low_conc_cherrypicking_df['VOLUME (ul)'] == 0)].index
 low_conc_cherrypicking_df.drop(low_conc_cherrypicking_zero_volume_row_indices, inplace=True)
