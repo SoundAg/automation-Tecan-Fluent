@@ -103,7 +103,11 @@ metadata_df = pd.read_csv(recent_metadata_filepath)
 metadata_x_axis = "RNA Elution Plate #"
 rna_conc_y_axis = "Eluted RNA conc (ng/ul)"
 
-fig_size_x_dimension = 4*source_plate_count
+if source_plate_count <= 2:
+    fig_size_x_dimension = 8
+if source_plate_count > 2:
+    fig_size_x_dimension = 4*source_plate_count
+
 fig, ax = plt.subplots(figsize=(fig_size_x_dimension, 10))  # Set a larger height by adjusting the second value (height) in figsize
 sns.boxplot(x=metadata_x_axis, y=rna_conc_y_axis, data=metadata_df, color='grey')
 sns.stripplot(x=metadata_x_axis, y=rna_conc_y_axis, data=metadata_df, color='black', size=8, jitter=True)
@@ -142,7 +146,6 @@ elution_rna_conc_plot = plt.gcf()
 metadata_x_axis = "Backdilution Plate #"
 backdilution_conc_y_axis = "Backdiluted RNA conc (ng/ul)"
 
-fig_size_x_dimension = 4*source_plate_count
 fig, ax = plt.subplots(figsize=(fig_size_x_dimension, 10))  # Set a larger height by adjusting the second value (height) in figsize
 sns.boxplot(x=metadata_x_axis, y=backdilution_conc_y_axis, data=metadata_df, color='grey')
 sns.stripplot(x=metadata_x_axis, y=backdilution_conc_y_axis, data=metadata_df, color='black', size=8, jitter=True)
