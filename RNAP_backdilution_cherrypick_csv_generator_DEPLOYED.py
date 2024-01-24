@@ -158,11 +158,11 @@ cherrypicking_df = pd.DataFrame({
 })
 
 # Drop cherrypicks from the DataFrame where transfer volume = 0 to minimize tip waste
-cherrypicking_zero_transfer_volume_row_indices = cherrypicking_df[(cherrypicking_df['VOLUME (ul)'] == 0)].index
+cherrypicking_zero_transfer_volume_row_indices = cherrypicking_df[(cherrypicking_df['VOLUME (ul)'] < 5.0)].index
 cherrypicking_df.drop(cherrypicking_zero_transfer_volume_row_indices, inplace=True)
 
 # Create a DataFrame from elution plates to get non-backdiluted well contents completely transferred.
-low_conc_metadata_df = metadata_df[(metadata_df['Backdilution volume needed for normalization (ul)'] == 0)]
+low_conc_metadata_df = metadata_df[(metadata_df['Backdilution volume needed for normalization (ul)'] < 5.0) + (metadata_df['Backdilution sample final volume (ul)'] < 40)]
 source_plate_name_list = low_conc_metadata_df['RNA Elution Plate #'].tolist()
 source_well_name_list = low_conc_metadata_df['Well ID'].tolist()
 destination_plate_name_list = low_conc_metadata_df['Backdilution Plate #'].tolist()
@@ -182,19 +182,27 @@ plate_names = ['Elution plate[001]','Elution plate[002]','Elution plate[003]','E
 for i, elution_volume in enumerate(elution_volumes, start=1):
     condition = (source_plate_count >= i)
     if condition:
-        remaining_sample_volume = elution_volume - (elution_volume / 4)
+        if (elution_volume / 4) < 40:
+            extra_cherrypick_volume = 40 - (elution_volume / 4)
+            remaining_sample_volume = elution_volume - 40
+            backdilution_sample_volume = 40
+        if (elution_volume / 4) >= 40:
+            extra_cherrypick_volume = 0
+            remaining_sample_volume = elution_volume - (elution_volume / 4)
+            backdilution_sample_volume = elution_volume / 4
+
         plate_name = plate_names[i-1]
         low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
-            lambda row: row['VOLUME (ul)'] + remaining_sample_volume if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'], axis=1
+            lambda row: row['VOLUME (ul)'] + extra_cherrypick_volume if row['SOURCE PLATE'] == plate_name else row['VOLUME (ul)'], axis=1
         )
         metadata_df['Elution sample remaining volume (ul)'] = metadata_df.apply(
-            lambda row: 0 if (row['Backdilution volume needed for normalization (ul)'] == 0) and (row['RNA Elution Plate #'] == plate_name) else row['Elution sample remaining volume (ul)'], axis=1
+            lambda row: remaining_sample_volume if (row['Backdilution volume needed for normalization (ul)'] < 5.0) and (row['RNA Elution Plate #'] == plate_name) else row['Elution sample remaining volume (ul)'], axis=1
         )
         metadata_df['Backdilution sample final volume (ul)'] = metadata_df.apply(
-            lambda row: elution_volume if (row['Backdilution volume needed for normalization (ul)'] == 0) and (row['RNA Elution Plate #'] == plate_name) else row['Backdilution sample final volume (ul)'], axis=1
+            lambda row: backdilution_sample_volume if (row['Backdilution volume needed for normalization (ul)'] < 5.0 or row['Backdilution sample final volume (ul)'] < 40) and (row['RNA Elution Plate #'] == plate_name) else row['Backdilution sample final volume (ul)'], axis=1
         )
 
-low_conc_cherrypicking_zero_volume_row_indices = low_conc_cherrypicking_df[(low_conc_cherrypicking_df['VOLUME (ul)'] == 0)].index
+low_conc_cherrypicking_zero_volume_row_indices = low_conc_cherrypicking_df[(low_conc_cherrypicking_df['VOLUME (ul)'] < 5.0)].index
 low_conc_cherrypicking_df.drop(low_conc_cherrypicking_zero_volume_row_indices, inplace=True)
 
 # Combine all cherrypicking dataframes.

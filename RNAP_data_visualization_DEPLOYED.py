@@ -183,8 +183,8 @@ backdilution_conc_plot = plt.gcf()
 # BACKDILUTION RATE PIECHART GENERATION
 metadata_df_grouped = metadata_df.groupby("Backdilution Plate #")
 plate_1_df = metadata_df_grouped.get_group('Backdilution plate[001]')
-plate_1_zero_backdilution_volume_rows = plate_1_df[(plate_1_df['Backdilution volume needed for normalization (ul)'] == 0)]
-plate_1_nonzero_backdilution_volume_rows = plate_1_df[(plate_1_df['Backdilution volume needed for normalization (ul)'] != 0)]
+plate_1_zero_backdilution_volume_rows = plate_1_df[(plate_1_df['Backdilution volume needed for normalization (ul)'] < 5.0)]
+plate_1_nonzero_backdilution_volume_rows = plate_1_df[(plate_1_df['Backdilution volume needed for normalization (ul)'] >= 5.0)]
 plate_1_backdilution_rate = round(len(plate_1_nonzero_backdilution_volume_rows)/len(plate_1_df)*100, 1)
 plate_1_undilute_rate = round(len(plate_1_zero_backdilution_volume_rows)/len(plate_1_df)*100, 1)
 
@@ -197,8 +197,8 @@ plate_1_backdilution_piechart = plt.gcf()
 
 if source_plate_count > 1:
     plate_2_df = metadata_df_grouped.get_group('Backdilution plate[002]')
-    plate_2_zero_backdilution_volume_rows = plate_2_df[(plate_2_df['Backdilution volume needed for normalization (ul)'] == 0)]
-    plate_2_nonzero_backdilution_volume_rows = plate_2_df[(plate_2_df['Backdilution volume needed for normalization (ul)'] != 0)]
+    plate_2_zero_backdilution_volume_rows = plate_2_df[(plate_2_df['Backdilution volume needed for normalization (ul)'] < 5.0)]
+    plate_2_nonzero_backdilution_volume_rows = plate_2_df[(plate_2_df['Backdilution volume needed for normalization (ul)'] >= 5.0)]
     plate_2_backdilution_rate = round(len(plate_2_nonzero_backdilution_volume_rows)/len(plate_2_df)*100, 1)
     plate_2_undilute_rate = round(len(plate_2_zero_backdilution_volume_rows)/len(plate_2_df)*100, 1)
     
@@ -211,8 +211,8 @@ if source_plate_count > 1:
     
 if source_plate_count > 2:
     plate_3_df = metadata_df_grouped.get_group('Backdilution plate[003]')
-    plate_3_zero_backdilution_volume_rows = plate_3_df[(plate_3_df['Backdilution volume needed for normalization (ul)'] == 0)]
-    plate_3_nonzero_backdilution_volume_rows = plate_3_df[(plate_3_df['Backdilution volume needed for normalization (ul)'] != 0)]
+    plate_3_zero_backdilution_volume_rows = plate_3_df[(plate_3_df['Backdilution volume needed for normalization (ul)'] < 5.0)]
+    plate_3_nonzero_backdilution_volume_rows = plate_3_df[(plate_3_df['Backdilution volume needed for normalization (ul)'] >= 5.0)]
     plate_3_backdilution_rate = round(len(plate_3_nonzero_backdilution_volume_rows)/len(plate_3_df)*100, 1)
     plate_3_undilute_rate = round(len(plate_3_zero_backdilution_volume_rows)/len(plate_3_df)*100, 1)
     
@@ -225,8 +225,8 @@ if source_plate_count > 2:
     
 if source_plate_count > 3:
     plate_4_df = metadata_df_grouped.get_group('Backdilution plate[004]')
-    plate_4_zero_backdilution_volume_rows = plate_4_df[(plate_4_df['Backdilution volume needed for normalization (ul)'] == 0)]
-    plate_4_nonzero_backdilution_volume_rows = plate_4_df[(plate_4_df['Backdilution volume needed for normalization (ul)'] != 0)]
+    plate_4_zero_backdilution_volume_rows = plate_4_df[(plate_4_df['Backdilution volume needed for normalization (ul)'] < 5.0)]
+    plate_4_nonzero_backdilution_volume_rows = plate_4_df[(plate_4_df['Backdilution volume needed for normalization (ul)'] >= 5.0)]
     plate_4_backdilution_rate = round(len(plate_4_nonzero_backdilution_volume_rows)/len(plate_4_df)*100, 1)
     plate_4_undilute_rate = round(len(plate_4_zero_backdilution_volume_rows)/len(plate_4_df)*100, 1)
     
