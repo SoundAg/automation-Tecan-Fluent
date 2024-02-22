@@ -3,10 +3,10 @@ import math
 import pandas as pd
 
 # Use FluentControl GetFile/Export Variables commands to obtain cherrypick filepath as a string, then pass string to reader for processing. 
-#exported_variables_file_path = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/pumbaa_exported_variables_file_path.csv"
-#filepath_df = pd.read_csv(exported_variables_file_path ,header=None)
-#cherrypick_filepath_string = str(filepath_df.iloc[1,0])
-cherrypick_filepath_string = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/GetFile folder/Exp256_ nif Gene Screen S0085 - S0100 (Campaign 3) - (Left Side) Cherrypick Script.csv"
+exported_variables_file_path = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/pumbaa_exported_variables_file_path.csv"
+filepath_df = pd.read_csv(exported_variables_file_path ,header=None)
+cherrypick_filepath_string = str(filepath_df.iloc[1,0])
+#cherrypick_filepath_string = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/GetFile folder/Exp256_ nif Gene Screen S0085 - S0100 (Campaign 3) - (Left Side) Cherrypick Script.csv"
 
 # Pass string to df via reader, then convert to dictionary. 
 df = pd.read_csv(cherrypick_filepath_string, skiprows=0, header=0)
