@@ -233,3 +233,5 @@ metadata_df.to_csv(local_metadata_file_path, index=False) # Export a local copy 
 metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of metadata to RnD Transfer.
 combined_cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
 combined_cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
+
+combined_cherrypicking_df.to_csv('G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypick optimizer/RNAP optimizer/non-optimized cherrypick.csv', index=False) # Export a copy of cherrypick to the optimizer folder.
