@@ -71,7 +71,8 @@ for loop_count, excel_filepath in enumerate(only_measurement_filepaths, start=1)
     backdilution_plate_id = f'Backdilution plate[00{loop_count}]'
     normalization_concentration = locals()[f'norm_conc_{loop_count}']
     elution_volume = locals()[f'elution_volume_{loop_count}']
-    rna_transfer_volume = elution_volume / 4
+    #rna_transfer_volume = elution_volume / 4
+    rna_transfer_volume = 40
     
     df = pd.read_excel(excel_filepath)
     extracted_data = df.iloc[53:61, 1:13].values
@@ -182,14 +183,14 @@ plate_names = ['Elution plate[001]','Elution plate[002]','Elution plate[003]','E
 for i, elution_volume in enumerate(elution_volumes, start=1):
     condition = (source_plate_count >= i)
     if condition:
-        if (elution_volume / 4) < 40:
-            extra_cherrypick_volume = 40 - (elution_volume / 4)
+        if (rna_transfer_volume) < 40:
+            extra_cherrypick_volume = 40 - rna_transfer_volume
             remaining_sample_volume = elution_volume - 40
             backdilution_sample_volume = 40
-        if (elution_volume / 4) >= 40:
+        if (rna_transfer_volume) >= 40:
             extra_cherrypick_volume = 0
-            remaining_sample_volume = elution_volume - (elution_volume / 4)
-            backdilution_sample_volume = elution_volume / 4
+            remaining_sample_volume = elution_volume - rna_transfer_volume
+            backdilution_sample_volume = rna_transfer_volume
 
         plate_name = plate_names[i-1]
         low_conc_cherrypicking_df['VOLUME (ul)'] = low_conc_cherrypicking_df.apply(
@@ -234,4 +235,4 @@ metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of me
 combined_cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
 combined_cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
 
-combined_cherrypicking_df.to_csv('G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypick optimizer/RNAP optimizer/non-optimized cherrypick.csv', index=False) # Export a copy of cherrypick to the optimizer folder.
+combined_cherrypicking_df.to_csv('G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/RNAP optimizer/rnap_nonoptimized_cp.csv', index=False) # Export a copy of cherrypick to the optimizer folder.
