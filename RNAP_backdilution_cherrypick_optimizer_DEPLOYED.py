@@ -48,7 +48,7 @@ for transfer in dfDict:
         })
 
 # Worklist generation magic starts here. The above transfer_info_consolidated dictionary will be used for string concatenation, for export as a custom GWL file.
-tip_capacity = 950.0
+tip_capacity = 900.0
 tipmask_indices = ['1','2','4','8','16','32','64','128']
 worklist_string = ''
 aspirate_counter = 0
