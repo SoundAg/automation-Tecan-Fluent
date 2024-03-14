@@ -62,7 +62,8 @@ for transfer in transfer_info_consolidated:
     for aspirate_num in range(num_aspirates):
         if aspirate_counter >= len(tipmask_indices):
             aspirate_counter = 0
-        tipmask = tipmask_indices[aspirate_counter]
+        #tipmask = tipmask_indices[aspirate_counter]
+        tipmask=""
         
         if aspirate_num < num_aspirates - 1:
             aspirate_volume = tip_capacity
