@@ -72,7 +72,7 @@ for loop_count, excel_filepath in enumerate(only_measurement_filepaths, start=1)
     normalization_concentration = locals()[f'norm_conc_{loop_count}']
     elution_volume = locals()[f'elution_volume_{loop_count}']
     #rna_transfer_volume = elution_volume / 4
-    rna_transfer_volume = 40
+    rna_transfer_volume = 10
     
     df = pd.read_excel(excel_filepath)
     extracted_data = df.iloc[53:61, 1:13].values
@@ -163,7 +163,7 @@ cherrypicking_zero_transfer_volume_row_indices = cherrypicking_df[(cherrypicking
 cherrypicking_df.drop(cherrypicking_zero_transfer_volume_row_indices, inplace=True)
 
 # Create a DataFrame from elution plates to get non-backdiluted well contents completely transferred.
-low_conc_metadata_df = metadata_df[(metadata_df['Backdilution volume needed for normalization (ul)'] < 5.0) + (metadata_df['Backdilution sample final volume (ul)'] < 40)]
+low_conc_metadata_df = metadata_df[(metadata_df['Backdilution volume needed for normalization (ul)'] < 5.0) + (metadata_df['Backdilution sample final volume (ul)'] < 40.0)]
 source_plate_name_list = low_conc_metadata_df['RNA Elution Plate #'].tolist()
 source_well_name_list = low_conc_metadata_df['Well ID'].tolist()
 destination_plate_name_list = low_conc_metadata_df['Backdilution Plate #'].tolist()
