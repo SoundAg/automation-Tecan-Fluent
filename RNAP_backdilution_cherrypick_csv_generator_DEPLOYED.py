@@ -1,6 +1,6 @@
 # The following code was updated from the QuantIT_RNAP_python_script_FLUENT_v6
-# To run: cd C:/Users/Max/Desktop/RNAP backdilution testing/
-# python QuantIT_RNAP_python_script_LOCAL_v7.py
+# To run: cd C:/Users/Tecan/Documents/Github/automation-Tecan-Fluent/RNAP_backdilution_cherrypick_csv_generator_DEPLOYED.py
+# UPDATED as of: 03/07/2024
 
 import os
 from datetime import datetime
@@ -11,26 +11,25 @@ import numpy as np
 
 # Step 1: Declare all filepaths to be used in the script.
 exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
+spark_filepaths = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/RNAP optimizer/rnap_spark_filepaths.csv"
 local_working_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/working directory/"
 local_storage_directory = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/automated backdilution cherrypick logs/"
 gdrive_cherrypick_storage_directory = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution cherrypick log/"
 gdrive_metadata_storage_directory = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
 
-# Load the exported CSV file into a DataFrame.
+# Load the exported CSV file containing runtime variables into a DataFrame.
 df = pd.read_csv(exported_variables_file_path ,header=None)
 source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_volume_1, elution_volume_2, elution_volume_3, elution_volume_4 = df.iloc[1, :].astype(float)
 source_plate_count = int(source_plate_count)
 
-# Step 2: Make a dictionary of filepaths and their modification times.
-measurement_files_folder_path = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
-file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
-
-# Step 3: Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
-files_sorted_by_modification_time = dict(sorted(file_dates_modified.items(), key=lambda x: x[1], reverse=True))
-recent_measurement_filepaths = list(files_sorted_by_modification_time)[:source_plate_count+1]
-reordered_measurement_filepaths = recent_measurement_filepaths[::-1]
-only_measurement_filepaths = reordered_measurement_filepaths[1:]
-standards_filepath = reordered_measurement_filepaths[0]
+# Step 2: Make a list of filepaths for all selected Spark measurements, specified at runtime.
+spark_filepath_df = pd.read_csv(spark_filepaths ,header=None)
+standards_filepath = str(spark_filepaths.iloc[1,0])
+plate1_filepath = str(spark_filepaths.iloc[1,1])
+plate2_filepath = str(spark_filepaths.iloc[1,2])
+plate3_filepath = str(spark_filepaths.iloc[1,3])
+plate4_filepath = str(spark_filepaths.iloc[1,4])
+selected_measurement_filepaths = [standards_filepath, plate1_filepath, plate2_filepath, plate3_filepath, plate4_filepath][0:source_plate_count+1]
 
 # Step 4: Process Standards data from the Ecoli rRNA standards assay plate.
 standards_df = pd.read_excel(standards_filepath)
@@ -66,7 +65,7 @@ backdilution_volume_list_1, backdilution_volume_list_2, backdilution_volume_list
 backdiluted_conc_1, backdiluted_conc_2, backdiluted_conc_3, backdiluted_conc_4 = [],[],[],[]
 backdiluted_sample_total_volume_1, backdiluted_sample_total_volume_2, backdiluted_sample_total_volume_3, backdiluted_sample_total_volume_4 = [],[],[],[]
 
-for loop_count, excel_filepath in enumerate(only_measurement_filepaths, start=1):
+for loop_count, excel_filepath in enumerate(selected_measurement_filepaths, start=1):
     elution_plate_id = f'Elution plate[00{loop_count}]'
     backdilution_plate_id = f'Backdilution plate[00{loop_count}]'
     normalization_concentration = locals()[f'norm_conc_{loop_count}']
