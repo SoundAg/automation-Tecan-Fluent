@@ -1,6 +1,5 @@
-# The following code was updated from the QuantIT_RNAP_python_script_FLUENT_v6
 # To run: cd C:/Users/Tecan/Documents/Github/automation-Tecan-Fluent/RNAP_backdilution_cherrypick_csv_generator_DEPLOYED.py
-# UPDATED as of: 03/07/2024
+# UPDATED as of: 03/15/2024
 
 import os
 from datetime import datetime
