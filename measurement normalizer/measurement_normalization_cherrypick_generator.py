@@ -1,4 +1,4 @@
-# Commandline scriptrun: cd Users/Tecan/Documnets/GitHub/automation-Tecan-Fluent/measurement_normalization_cherrypick_generator.py
+# Commandline scriptrun: cd Users/Tecan/Documents/GitHub/automation-Tecan-Fluent/measurement normalizer/measurement_normalization_cherrypick_generator.py
 
 # Import all the things
 import os
@@ -52,7 +52,6 @@ warning_df = pd.DataFrame({
     'errorWarningToggle' : [toggle]
 })
 
-
 #local_filepath = "C:/Users/Max/Desktop/meas_and_norm_testing/"
 #filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/errorToggle.csv"
 local_filepath = "C:/Users/Tecan/Desktop/Tecan Fluent780 desktop files/measurement_and_normalization/"
@@ -64,7 +63,7 @@ metadata_df.loc[metadata_df['remaining sample volume'] < 0, 'remaining sample vo
 metadata_df.loc[metadata_df['diluent volume for backdilution'] < 0, 'diluent volume for backdilution'] = 0
 metadata_df.loc[metadata_df['sample volume for backdilution'] <= 0, 'diluted sample volume'] = 0
 
-# Build the cherrypick using only valid, nonzero volume values.
+# Build the successful cherrypick using only valid, nonzero volume values.
 cleaned_metadata_df = metadata_df.drop(metadata_neg_value_error_df.index)
 cherrypick_df_diluent = pd.DataFrame({
     'SOURCE PLATE': ["Diluent" for val in range(0,len(cleaned_metadata_df))],
@@ -90,18 +89,24 @@ datetime_df = pd.DataFrame({
 })
 datetime_df.to_csv(local_filepath+"dateTime.csv", index=False)
 
-temp_cherrypick_csv_filename = "normalization_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
+#temp_cherrypick_csv_filename = "normalization_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
 backup_cherrypick_csv_filename = f"{reformatted_datetime_string}_Fluent backdilution_cherrypick.csv"
 metadata_csv_filename = f"{reformatted_datetime_string}_Fluent backdilution_metadata.csv"
 
 gdrive_directory_filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/"
-temp_cherrypick_filepath = os.path.join(local_filepath, temp_cherrypick_csv_filename)
+#temp_cherrypick_filepath = os.path.join(local_filepath, temp_cherrypick_csv_filename)
+local_cherrypick_filepath = os.path.join(local_filepath+"Backdilution cherrypick local log/", backup_cherrypick_csv_filename)
+local_metadata_filepath = os.path.join(local_filepath+"Backdilution metadata local log/", metadata_csv_filename)
 backup_cherrypick_filepath = os.path.join(gdrive_directory_filepath, backup_cherrypick_csv_filename)
-metadata_filepath = os.path.join(gdrive_directory_filepath, metadata_csv_filename)
+backup_metadata_filepath = os.path.join(gdrive_directory_filepath, metadata_csv_filename)
 
-metadata_df.to_csv(metadata_filepath, index=False)
+combined_cherrypick_df.to_csv(local_cherrypick_filepath, index=False)
+metadata_df.to_csv(local_metadata_filepath, index=False)
 combined_cherrypick_df.to_csv(backup_cherrypick_filepath, index=False)
-combined_cherrypick_df.to_csv(temp_cherrypick_filepath, index=False)
+metadata_df.to_csv(backup_metadata_filepath, index=False)
+
+# Export failed cherrypicks to local directory for iterative troubleshooting loops:
+metadata_neg_value_error_df.to_csv(local_cherrypick_filepath+"Backdilution error cherrypick log/"+reformatted_datetime_string+" backdilution cherrypick errors.csv", index=False)
 
 #Cherrypick optimization time.
 # Pass string to df via reader, then convert to dictionary. 
@@ -188,6 +193,6 @@ for transfer in transfer_info_consolidated:
         aspirate_counter += 1
 
 # Finally, export the optimized multidispense worklist with filename = rnap_optimized_cp.csv
-gwl_filepath = local_filepath + "optimized_cp.gwl"
+gwl_filepath = local_filepath + "Backdilution GWL local log/" + reformatted_datetime_string + " optimized_cp.gwl"
 with open(gwl_filepath, 'w') as file:
     file.write(worklist_string)
