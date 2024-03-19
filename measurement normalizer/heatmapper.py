@@ -29,5 +29,6 @@ current_time = datetime.now()
 reformatted_datetime_string = current_time.strftime("%Y-%m-%d %H-%M-%S")
 filename = reformatted_datetime_string + " heatmap.png" 
 plt.savefig(local_filepath + "Heatmap local log/" + filename, dpi=300, bbox_inches='tight')
+plt.savefig(local_filepath + "temp heatmap", dpi=300, bbox_inches='tight')
 plt.show()
 
