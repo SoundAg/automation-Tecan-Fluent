@@ -1,4 +1,5 @@
 # Commandline scriptrun: cd Users/Tecan/Documents/GitHub/automation-Tecan-Fluent/measurement normalizer/measurement_normalization_cherrypick_generator.py
+# The following script takes in Byonoy measurement data and user inputs from FluentControl, then creates backdilution normalization cherrypicks. 
 
 # Import all the things
 import os
@@ -20,8 +21,10 @@ plate_96_rows = ["A", "B", "C", "D", "E", "F", "G", "H"]
 plate_96_columns = [str(num) for num in range(1, 13)]
 plate_96_wells = [row + column for column in plate_96_columns for row in plate_96_rows]
 
-# Pull in a byonoy measurement file.
-measurement_filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/norm_tester.csv"
+# Grab measurement file from Byonoy filepath, specified at runtime.
+#measurement_filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/norm_tester.csv"
+byonoy_measurement_filepath_export = "C:/Users/Tecan/Desktop/Tecan Fluent780 desktop files/measurement_and_normalization/byonoy_measurement_filepath.csv"
+measurement_filepath = str(pd.read_csv(byonoy_measurement_filepath_export, header=None).iloc[1,0])
 df = pd.read_csv(measurement_filepath, header=None)
 columnwise_od_values = list(pd.melt(df.iloc[1:9, 1:13], var_name = "column", value_name = "od")["od"])
 
