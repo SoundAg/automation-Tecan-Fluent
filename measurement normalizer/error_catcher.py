@@ -25,7 +25,8 @@ plate_96_wells = [row + column for column in plate_96_columns for row in plate_9
 byonoy_measurement_filepath_export = "C:/Users/Tecan/Desktop/Tecan Fluent780 desktop files/measurement_and_normalization/byonoy_measurement_filepath.csv"
 measurement_filepath = str(pd.read_csv(byonoy_measurement_filepath_export, header=None).iloc[1,0])
 df = pd.read_csv(measurement_filepath, header=None)
-columnwise_od_values = list(pd.melt(df.iloc[1:9, 1:13], var_name = "column", value_name = "od")["od"])
+columnwise_od_strings = list(pd.melt(df.iloc[1:9, 1:13], var_name = "column", value_name = "od")["od"])
+columnwise_od_values = [float(val) for val in columnwise_od_strings]
 
 # Build the metadata dataframe
 norm_target_list = [normalization_target for val in range(0,len(columnwise_od_values))]
@@ -56,4 +57,4 @@ warning_df = pd.DataFrame({
 
 #local_filepath = "C:/Users/Max/Desktop/meas_and_norm_testing/"
 local_filepath = "C:/Users/Tecan/Desktop/Tecan Fluent780 desktop files/measurement_and_normalization/"
-warning_df.to_csv(local_filepath+"errorToggle.csv", index=False)
+warning_df.to_csv(local_filepath+"errorWarningToggle.csv", index=False)
