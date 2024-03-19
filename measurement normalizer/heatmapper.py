@@ -32,3 +32,8 @@ plt.savefig(local_filepath + "Heatmap local log/" + filename, dpi=300, bbox_inch
 plt.savefig(local_filepath + "temp heatmap", dpi=300, bbox_inches='tight')
 #plt.show()
 
+# Save to Drive locations for public access
+gdrive_filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/Heatmap log/"
+plt.savefig(gdrive_filepath + filename, dpi=300, bbox_inches='tight')
+
+

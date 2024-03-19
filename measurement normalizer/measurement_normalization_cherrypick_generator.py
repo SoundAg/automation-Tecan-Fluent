@@ -98,19 +98,21 @@ backup_cherrypick_csv_filename = f"{reformatted_datetime_string}_Fluent backdilu
 metadata_csv_filename = f"{reformatted_datetime_string}_Fluent backdilution_metadata.csv"
 
 gdrive_directory_filepath = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Byonoy/measurement normalizer/"
-#temp_cherrypick_filepath = os.path.join(local_filepath, temp_cherrypick_csv_filename)
+
 local_cherrypick_filepath = os.path.join(local_filepath+"Backdilution cherrypick local log/", backup_cherrypick_csv_filename)
 local_metadata_filepath = os.path.join(local_filepath+"Backdilution metadata local log/", metadata_csv_filename)
-backup_cherrypick_filepath = os.path.join(gdrive_directory_filepath, backup_cherrypick_csv_filename)
-backup_metadata_filepath = os.path.join(gdrive_directory_filepath, metadata_csv_filename)
+backup_cherrypick_filepath = os.path.join(gdrive_directory_filepath+"Backdilution cherrypick log/", backup_cherrypick_csv_filename)
+backup_metadata_filepath = os.path.join(gdrive_directory_filepath+"Backdilution metadata log/", metadata_csv_filename)
 
 combined_cherrypick_df.to_csv(local_cherrypick_filepath, index=False)
 metadata_df.to_csv(local_metadata_filepath, index=False)
 combined_cherrypick_df.to_csv(backup_cherrypick_filepath, index=False)
 metadata_df.to_csv(backup_metadata_filepath, index=False)
 
-# Export failed cherrypicks to local directory for iterative troubleshooting loops:
+# Export failed cherrypicks to directories for iterative troubleshooting loops:
 metadata_neg_value_error_df.to_csv(local_filepath+"Backdilution error cherrypick log/"+reformatted_datetime_string+" backdilution cherrypick errors.csv", index=False)
+metadata_neg_value_error_df.to_csv(gdrive_directory_filepath+"Backdilution error cherrypick log/"+reformatted_datetime_string+" backdilution cherrypick errors.csv", index=False)
+
 
 #Cherrypick optimization time.
 # Pass string to df via reader, then convert to dictionary. 
