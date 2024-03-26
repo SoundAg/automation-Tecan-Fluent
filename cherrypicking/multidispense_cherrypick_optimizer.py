@@ -89,7 +89,26 @@ for transfer in transfer_info_consolidated:
         else:
             aspirate_volume = total_volume - (tip_capacity * (num_aspirates - 1))
 
-        worklist_string += f'A;{source_plate};;;{source_well};;{aspirate_volume:.2f};;;{tipmask};\n'
+        if tip_capacity == 900.0:
+            disposal_volume = aspirate_volume * 0.05
+            #disposal_volume = 50.0
+
+        if tip_capacity == 190.0:
+            disposal_volume = aspirate_volume * 0.05
+            #disposal_volume = 20.0
+
+        if tip_capacity == 45.0:
+            #disposal_volume = 5.0
+            if aspirate_volume <= 30:
+                disposal_volume = aspirate_volume * 0.25
+            if aspirate_volume > 30:
+                disposal_volume = aspirate_volume * 0.1
+
+        if tip_capacity == 9.5:
+            disposal_volume = 1.0
+
+        aspirate_volume_with_excess = aspirate_volume + disposal_volume
+        worklist_string += f'A;{source_plate};;;{source_well};;{aspirate_volume_with_excess:.2f};;;{tipmask};\n'
                 
         remaining_volume = aspirate_volume
         for dispense_idx, dispense_volume in enumerate(transfer['Volumes']):
@@ -105,23 +124,12 @@ for transfer in transfer_info_consolidated:
                 dest_well = transfer['Destination Wells'][dispense_idx]
                     
                 worklist_string += f'D;{dest_plate};;;{dest_well};;{dispensed_volume:.2f};;;{tipmask};\n'
-        """
-        if tip_capacity == 900.0:
-            disposal_volume = aspirate_volume * 0.05 # This is the value to change depending upon LC excess volume formula.
-
-        if tip_capacity == 180.0:
-            disposal_volume = aspirate_volume * 0.05 # This is the value to change depending upon LC excess volume formula.
-
-        if tip_capacity == 45.0:
-            disposal_volume = aspirate_volume * 0.05 # This is the value to change depending upon LC excess volume formula.
-
-        if tip_capacity == 9.5:
-            disposal_volume = aspirate_volume * 0.05 # This is the value to change depending upon LC excess volume formula.
-        """
-        disposal_volume = 0.05*tip_capacity
+       
         empty_tips_string = f'D;{source_plate};;;{source_well};;{disposal_volume};;;{tipmask};\n'
-        worklist_string += empty_tips_string + 'W;\n'
+
         aspirate_counter += 1
+
+    worklist_string += empty_tips_string + 'W;\n'
 
 # Export the worklist to a textfile with .GWL file extension.
 filepath = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/cherrypicks/log/" + reformatted_datetime_string  + "_multidispense_optimized_cherrypick.gwl"
