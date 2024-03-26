@@ -126,10 +126,11 @@ for transfer in transfer_info_consolidated:
                 worklist_string += f'D;{dest_plate};;;{dest_well};;{dispensed_volume:.2f};;;{tipmask};\n'
        
         empty_tips_string = f'D;{source_plate};;;{source_well};;{disposal_volume};;;{tipmask};\n'
+        worklist_string += empty_tips_string
 
         aspirate_counter += 1
 
-    worklist_string += empty_tips_string + 'W;\n'
+    worklist_string += 'W;\n'
 
 # Export the worklist to a textfile with .GWL file extension.
 filepath = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/cherrypicks/log/" + reformatted_datetime_string  + "_multidispense_optimized_cherrypick.gwl"
