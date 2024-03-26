@@ -2,6 +2,7 @@
 # To run: cd C:/Users/Tecan/Documents/Github/automation-Tecan-Fluent/RNAP_backdilution_cherrypick_csv_generator_DEPLOYED.py
 # UPDATED as of: 03/07/2024
 
+import csv
 import os
 from datetime import datetime
 import math as math
@@ -24,11 +25,11 @@ source_plate_count = int(source_plate_count)
 
 # Step 2: Make a list of filepaths for all selected Spark measurements, specified at runtime.
 spark_filepath_df = pd.read_csv(spark_filepaths ,header=None)
-standards_filepath = str(spark_filepaths.iloc[1,0])
-plate1_filepath = str(spark_filepaths.iloc[1,1])
-plate2_filepath = str(spark_filepaths.iloc[1,2])
-plate3_filepath = str(spark_filepaths.iloc[1,3])
-plate4_filepath = str(spark_filepaths.iloc[1,4])
+standards_filepath = spark_filepath_df.iloc[1,0]
+plate1_filepath = spark_filepath_df.iloc[1,1]
+plate2_filepath = spark_filepath_df.iloc[1,2]
+plate3_filepath = spark_filepath_df.iloc[1,3]
+plate4_filepath = spark_filepath_df.iloc[1,4]
 selected_measurement_filepaths = [standards_filepath, plate1_filepath, plate2_filepath, plate3_filepath, plate4_filepath][0:source_plate_count+1]
 
 # Step 4: Process Standards data from the Ecoli rRNA standards assay plate.
@@ -65,7 +66,8 @@ backdilution_volume_list_1, backdilution_volume_list_2, backdilution_volume_list
 backdiluted_conc_1, backdiluted_conc_2, backdiluted_conc_3, backdiluted_conc_4 = [],[],[],[]
 backdiluted_sample_total_volume_1, backdiluted_sample_total_volume_2, backdiluted_sample_total_volume_3, backdiluted_sample_total_volume_4 = [],[],[],[]
 
-for loop_count, excel_filepath in enumerate(selected_measurement_filepaths, start=1):
+only_measurement_filepaths = selected_measurement_filepaths[1:]
+for loop_count, excel_filepath in enumerate(only_measurement_filepaths, start=1):
     elution_plate_id = f'Elution plate[00{loop_count}]'
     backdilution_plate_id = f'Backdilution plate[00{loop_count}]'
     normalization_concentration = locals()[f'norm_conc_{loop_count}']
@@ -213,13 +215,15 @@ current_time = datetime.now()
 reformatted_datetime_string = current_time.strftime("%Y-%m-%d %H-%M-%S")
 
 # Define file names
-working_cherrypick_csv_filename = "Fluent_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
+water_working_cherrypick_csv_filename = "Fluent_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
+low_conc_working_cherrypick_csv_filename = "Low_Yield_Samples_Fluent_backdilution_cherrypick.csv" # This is what the Fluent uses to generate a .GWL worklist.
 
 metadata_csv_filename = f"{reformatted_datetime_string}_Fluent backdilution_metadata.csv"
 backup_cherrypick_csv_filename = f"{reformatted_datetime_string}_Fluent backdilution_cherrypick.csv"
 
 # Define file paths
-local_working_cherrypick_file_path = os.path.join(local_working_directory, working_cherrypick_csv_filename) # This is the local directory that contains temporary .CSV and .GWL files, referenced by FluentControl, overwritten during each scriptrun.
+local_working_cherrypick_file_path = os.path.join(local_working_directory, water_working_cherrypick_csv_filename) # This is the local directory that contains temporary .CSV and .GWL files, referenced by FluentControl, overwritten during each scriptrun.
+low_conc_working_cherrypick_file_path = os.path.join(local_working_directory, low_conc_working_cherrypick_csv_filename) # This is the local directory that contains temporary .CSV and .GWL files, referenced by Fluen
 
 local_metadata_file_path = os.path.join(local_storage_directory, metadata_csv_filename)
 gdrive_metadata_file_path = os.path.join(gdrive_metadata_storage_directory, metadata_csv_filename)
@@ -227,11 +231,12 @@ local_backup_cherrypick_file_path = os.path.join(local_storage_directory, backup
 gdrive_cherrypick_file_path = os.path.join(gdrive_cherrypick_storage_directory, backup_cherrypick_csv_filename)
 
 # Export DataFrames to CSV
-combined_cherrypicking_df.to_csv(local_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
+cherrypicking_df.to_csv(local_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
+low_conc_cherrypicking_df.to_csv(low_conc_working_cherrypick_file_path, index=False) # This exports the CSV that FluentControl references for .GWL file generation.
 
 metadata_df.to_csv(local_metadata_file_path, index=False) # Export a local copy of metadata.
 metadata_df.to_csv(gdrive_metadata_file_path, index=False) # Export a copy of metadata to RnD Transfer.
 combined_cherrypicking_df.to_csv(local_backup_cherrypick_file_path, index=False) # Export a local copy of cherrypick.
 combined_cherrypicking_df.to_csv(gdrive_cherrypick_file_path, index=False) # Export a copy of cherrypick to RnD Transfer.
 
-combined_cherrypicking_df.to_csv('G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/RNAP optimizer/rnap_nonoptimized_cp.csv', index=False) # Export a copy of cherrypick to the optimizer folder.
+cherrypicking_df.to_csv('G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/RNAP optimizer/rnap_nonoptimized_cp.csv', index=False) # Export a copy of cherrypick to the optimizer folder.

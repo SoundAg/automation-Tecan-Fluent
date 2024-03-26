@@ -11,6 +11,7 @@ from datetime import datetime
 
 # Declare all filepaths to be used in the script.
 exported_variables_file_path = "C:/Users/Tecan/Desktop/Tecan Fluent desktop files/RNAP data management/rnap_automated_backdilution_cherrypick_inputs.csv"
+spark_filepaths = "G:/.shortcut-targets-by-id/1V3zHAt-KtgEHOLBdDqNfpfAGsRY6myLO/Automation/Tecan Fluent resources/Cherrypicks/Cherrypick optimizer/RNAP optimizer/rnap_spark_filepaths.csv"
 measurement_files_folder_path  = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Spark/RNA QUANT MEASUREMENT FILES/"
 metadata_folder_path = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Backdilution metadata log/"
 plot_file_path = "G:/.shortcut-targets-by-id/1SA9d7OhoYdnH2QPxGxtxoE_0ZB5ZlyCP/RnD Transfer/Fluent 1080/RNA Prep Data/Data visualization outputs/"
@@ -20,14 +21,9 @@ df = pd.read_csv(exported_variables_file_path ,header=None)
 source_plate_count, norm_conc_1, norm_conc_2, norm_conc_3, norm_conc_4, elution_volume_1, elution_volume_2, elution_volume_3, elution_volume_4 = df.iloc[1, :].astype(float)
 source_plate_count = int(source_plate_count)
 
-# Get the most recent measurement and standards files
-file_dates_modified = {os.path.join(measurement_files_folder_path, filename): os.path.getmtime(os.path.join(measurement_files_folder_path, filename)) for filename in os.listdir(measurement_files_folder_path) if filename.endswith(".xlsx")}
-
-#Sort filepaths by modification time and select the most recent (based on source_plate_count value imported from FluentControl).
-files_sorted_by_modification_time = dict(sorted(file_dates_modified.items(), key=lambda x: x[1], reverse=True))
-recent_measurement_filepaths = list(files_sorted_by_modification_time)[:source_plate_count+1]
-reordered_measurement_filepaths = recent_measurement_filepaths[::-1]
-standards_filepath = reordered_measurement_filepaths[0]
+# Step 2: Make a list of filepaths for all selected Spark measurements, specified at runtime.
+spark_filepath_df = pd.read_csv(spark_filepaths ,header=None)
+standards_filepath = spark_filepath_df.iloc[1,0]
 
 # STANDARDS SCATTERPLOT GENERATION
 standards_df = pd.read_excel(standards_filepath)
