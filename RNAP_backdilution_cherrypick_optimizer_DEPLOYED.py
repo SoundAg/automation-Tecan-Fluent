@@ -70,7 +70,9 @@ for transfer in transfer_info_consolidated:
         else:
             aspirate_volume = total_volume - (tip_capacity * (num_aspirates - 1))
         
-        worklist_string += f'A;{source_plate};;;{source_well};;{aspirate_volume:.2f};;;{tipmask};\n'
+        disposal_volume = 50.0
+        aspirate_volume_with_excess = aspirate_volume + disposal_volume
+        worklist_string += f'A;{source_plate};;;{source_well};;{aspirate_volume_with_excess:.2f};;;{tipmask};\n'
         
         remaining_volume = aspirate_volume
         for dispense_idx, dispense_volume in enumerate(transfer['VOLUMES']):
